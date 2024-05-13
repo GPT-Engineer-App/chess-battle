@@ -29,6 +29,34 @@ const pieceImages = {
 
 const Index = () => {
   const [board, setBoard] = useState(initialBoard);
+  const [selectedPiece, setSelectedPiece] = useState(null);
+  const [selectedPosition, setSelectedPosition] = useState(null);
+
+  const handlePieceClick = (piece, rowIndex, colIndex) => {
+    if (piece) {
+      setSelectedPiece(piece);
+      setSelectedPosition([rowIndex, colIndex]);
+    }
+  };
+
+  const handleSquareClick = (rowIndex, colIndex) => {
+    if (selectedPiece && selectedPosition) {
+      const newBoard = board.map((row, rIdx) =>
+        row.map((col, cIdx) => {
+          if (rIdx === selectedPosition[0] && cIdx === selectedPosition[1]) {
+            return "";
+          }
+          if (rIdx === rowIndex && cIdx === colIndex) {
+            return selectedPiece;
+          }
+          return col;
+        })
+      );
+      setBoard(newBoard);
+      setSelectedPiece(null);
+      setSelectedPosition(null);
+    }
+  };
 
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
@@ -46,6 +74,8 @@ const Index = () => {
                   alignItems="center"
                   justifyContent="center"
                   bg={(rowIndex + colIndex) % 2 === 0 ? "gray.200" : "gray.600"}
+                  onClick={() => (piece ? handlePieceClick(piece, rowIndex, colIndex) : handleSquareClick(rowIndex, colIndex))}
+                  border={selectedPosition && selectedPosition[0] === rowIndex && selectedPosition[1] === colIndex ? "2px solid red" : "none"}
                 >
                   {piece && <Image src={`/images/${pieceImages[piece]}`} alt={piece} boxSize="36px" />}
                 </Box>
